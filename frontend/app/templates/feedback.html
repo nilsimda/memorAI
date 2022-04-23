@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1> Feedback </h1>
+    <h1> Record your thoughts </h1>
+    <input type="file" accept="audio/*" capture />
+    <p> {{ text }} </p>
 {% endblock %}

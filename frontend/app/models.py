@@ -25,7 +25,7 @@ class User(UserMixin, db.Model):
 class Feedback(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     feedback = db.Column(db.String(140))
-    semantic = db.Column(db.Integer)
+    semantic = db.Column(db.String(20))
     info = db.Column(db.String(140))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
