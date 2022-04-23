@@ -12,7 +12,6 @@ from werkzeug.urls import url_parse
 def index():
     return render_template('index.html', title='Home')
                              
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -34,4 +33,9 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@login_required
+@app.route('/feedback')
+def feedback():
+    return render_template('feedback.html', title='Feedback')
 

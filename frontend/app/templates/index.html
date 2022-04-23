@@ -2,5 +2,8 @@
 
 {% block content %}
     <h1> Hi, {{current_user.username}}! </h1>
+    <button>
+        <a href="{{ url_for('feedback') }}">Give Feedback on the last Memory you saw!</a>
+    </button>
 {% endblock %}
 
