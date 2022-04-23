@@ -10,9 +10,14 @@ class ContentGetter(object):
         query = query.replace('\n','')
         _search_params = {
         'q': query,
-        'num': 3,
-        'fileType': 'jpg|gif|png',
-        'rights': 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived',
+        'num': 1,
+        'fileType': 'jpg',
+        # 'rights': 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived',
+        'imgType': 'photo',
+        'safe': 'medium',
+        'imgSize': 'MEDIUM',
+        # "tbm": "isch",
+        # "tbs": "itp:photos,isz:s"
         }
         self.gis.search(search_params=_search_params)
         image_urls = []
