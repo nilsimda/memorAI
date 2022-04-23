@@ -1,28 +1,38 @@
-<!doctype html>
-<html>
-    <head>
+{% extends 'bootstrap/base.html' %}
+
+{% block title %}
         {%if title%}
-        <title>{{title}} - MemorAI</title>
+        {{title}} - MemorAI
         {%else%}
-            <title>MemorAI</title>
+            Welcome to MemorAI
         {%endif%}
-    </head>
-    <body>
+{% endblock %}
+
+{% block navbar %}
+    <nav class="navbar navbar-default">
         <div> MemorAI:
             <a href="{{ url_for('index') }}">Home</a>
+            {% if current_user.is_anonymous %}
             <a href="{{ url_for('login') }}">Login</a>
+            {% else %}
             <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
         </div>
-        <hr>
+    </nav>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        <ul>
             {% for message in messages %}
-            <li>{{ message }}</li>
+            <div class="alert alert-info" role="alert">{{ message }}</div>
             {% endfor %}
-        </ul>
         {% endif %}
         {% endwith %}
-        {% block content %}{% endblock %}
-    </body>
-</html>
+
+        {# application content needs to be provided in the app_content block #}
+        {% block app_content %}{% endblock %}
+    </div>
+{% endblock %}
+
