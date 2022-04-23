@@ -1,23 +1,22 @@
 import openai
-import config
-import templates
+from recommender import config
+from recommender import templates
 import random
 import csv
 from easydict import EasyDict as edict
-
+event_types = ['sports', 'music']
 openai.api_key = config.OPENAI_API_KEY
 
 class Assistant(object):
-    def __init__(self, user_filename, engine="text-davinci-002"):
+    def __init__(self, user, engine="text-davinci-002"):
+        print("Initializing Assistant...")
         self.engine = engine
-        user = {}
-        with open(user_filename, mode='r', encoding='utf-16') as inp:
-            reader = csv.reader(inp)
-            user = {cols[0]:cols[1] for cols in reader}
-        self.user = edict(user)
-        self.user.my_story = templates.my_story.format(self.user.name, self.user.birth_year, 
+        self.user = user
+        self.user.my_story = templates.my_story.format(self.user.username, self.user.birth_year, 
                                                         self.user.birth_place, self.user.current_place, 
                                                         self.user.favorite_band, self.user.favorite_film)
+        print("Assistant Ready...")
+        
     
     def initialize(self):
         _ = self.send_query(templates.init_query.format(self.user.name))
@@ -26,10 +25,14 @@ class Assistant(object):
         self.user.my_story += (info+".")
 
     def recommend_film(self):
-        return self.send_query(templates.film_query.format(self.user.favorite_film))
+        recommendation = self.send_query(templates.film_query.format(self.user.favorite_film))
+        return (recommendation,
+                self.send_query(templates.query.format("the film" + recommendation), max_tokens=128, temperature=0.6))
 
     def recommend_band(self):
-        return self.send_query(templates.band_query.format(self.user.favorite_band))
+        recommendation = self.send_query(templates.band_query.format(self.user.favorite_band))
+        return (recommendation, 
+                self.send_query(templates.query.format("the artist " + recommendation), max_tokens=128, temperature=0.6))
 
     def recommend_song(self):
         return self.send_query(templates.song_query.format(self.user.favorite_band))
@@ -38,16 +41,17 @@ class Assistant(object):
         year = int(self.user.birth_year)+random.randint(15,50)
         year = int((year/10)*10)
         print("year: {}".format(year))
-        return self.send_query(templates.historical_query.format(self.user.birth_place, year))
+        recommendation = self.send_query(templates.historical_query.format(event_types[random.randint(0,1)], self.user.birth_place, year)).split('.')[0]
+        return (recommendation, self.send_query(templates.query.format(recommendation),max_tokens=128, temperature=0.6))
     
     def ask(self, question):
         return self.send_query(self.user.my_story + "\n\nHuman: " + question)
     
-    def send_query(self,msg,max_tokens=32):
+    def send_query(self,msg,max_tokens=32, temperature = 0.4):
         response = openai.Completion.create(
         engine=self.engine,
         prompt=msg,
-        temperature=0.6,
+        temperature=temperature,
         max_tokens=max_tokens,
         top_p=0.8,
         frequency_penalty=0,

@@ -1,8 +1,6 @@
 import openai
-import config
-import templates
-import random
-import csv
+from recommender import config
+from recommender import templates
 from easydict import EasyDict as edict
 
 openai.api_key = config.OPENAI_API_KEY

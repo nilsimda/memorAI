@@ -1,0 +1,3 @@
+export FLASK_APP=frontend.py
+export FLASK_ENV=development
+export OPENAI_API_KEY=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
