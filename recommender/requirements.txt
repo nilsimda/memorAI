@@ -24,3 +24,5 @@ tqdm==4.62.3
 urllib3==1.26.7
 Werkzeug==2.0.2
 easydict
+Google-Images-Search
+youtube-search-python
