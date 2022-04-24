@@ -8,21 +8,25 @@ event_types = ['sports', 'music']
 openai.api_key = config.OPENAI_API_KEY
 
 class Assistant(object):
-    def __init__(self, user, engine="text-davinci-002"):
+    def __init__(self, engine="text-davinci-002"):
         print("Initializing Assistant...")
         self.engine = engine
-        self.user = user
-        self.user.my_story = templates.my_story.format(self.user.username, self.user.birth_year, 
-                                                        self.user.birth_place, self.user.current_place, 
-                                                        self.user.favorite_band, self.user.favorite_film)
-        print("Assistant Ready...")
+        self.is_initialized = False
+        
         
     
-    def initialize(self):
-        _ = self.send_query(templates.init_query.format(self.user.name))
+    def initialize(self, user):
+        if(not self.is_initialized):
+            self.user = user
+            self.user_story = templates.my_story.format(self.user.username, self.user.birth_year, 
+                                                            self.user.birth_place, self.user.current_place, 
+                                                            self.user.favorite_band, self.user.favorite_film)
+        else:
+            print("Assistant was already initialized")
+        print("Assistant Ready...")
 
     def add_info_user_story(self,info):
-        self.user.my_story += (info+".")
+        self.user_story += (info+". ")
 
     def recommend_film(self):
         recommendation = self.send_query(templates.film_query.format(self.user.favorite_film))
@@ -45,7 +49,7 @@ class Assistant(object):
         return (recommendation, self.send_query(templates.query.format(recommendation),max_tokens=128, temperature=0.6))
     
     def ask(self, question):
-        return self.send_query(self.user.my_story + "\n\nHuman: " + question)
+        return self.send_query(self.user_story + "\n\nHuman: " + question)
     
     def send_query(self,msg,max_tokens=32, temperature = 0.4):
         response = openai.Completion.create(

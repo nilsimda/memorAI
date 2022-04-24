@@ -1,18 +1,17 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1> Record your thoughts </h1>
+<h1> Ask me any question </h1>
 
 <head>
     <meta charset="UTF-8">
-    <title>Record your thoughts</title>
+    <title>Ask me any question</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>
 
 <body>
 
-    <p> Hit the Start button, say whatever is in your mind or tell us about yourself and this will be recorded for later
-        use :)</p>
+    <p> To talk, please press the start button</p>
     <p>
         <button id="startRecording">Start</button>
         <button id="stopRecording" disabled>Stop</button>
@@ -41,7 +40,7 @@
             //Chrome inspector shows that the post data includes a file and a title.
             $.ajax({
                 type: 'POST',
-                url: '/voice-journal',
+                url: '/voice-assistant',
                 data: form,
                 cache: false,
                 processData: false,
@@ -70,7 +69,7 @@
     </script>
 </body>
 
-<p>Your entry: <span id="myText"></span></h1> </p>
+<p>Answer: <span id="myText"></span></h1> </p>
 
 
 {% endblock %}

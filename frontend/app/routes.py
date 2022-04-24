@@ -14,13 +14,13 @@ from flask_cors import CORS, cross_origin
 # app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
-assistant = Assistant(current_user)
-
+assistant = Assistant()
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
+    assistant.initialize(current_user)
     return render_template('index.html', title='Home')
                              
 @app.route('/login', methods=['GET', 'POST'])
@@ -51,7 +51,7 @@ def feedback():
     return render_template('feedback.html', title='Feedback')
 
 
-@app.route('/save-record', methods=['POST'])
+@app.route('/voice-journal', methods=['POST'])
 @cross_origin()
 def audio():
     # check if the post request has the file part
@@ -73,7 +73,42 @@ def audio():
     text_entry = speech2text(full_file_name)
     # text_entry = "Hello I am Juan"
     print(text_entry)
+    # Add Text to My Story
+    assistant.add_info_user_story(text_entry)
     return text_entry
+
+@login_required
+@app.route('/assistant_page', methods=['GET', 'POST'])
+def assistant_page():
+    return render_template('assistant_page.html', title='AssistantPage')
+
+
+@app.route('/voice-assistant', methods=['POST'])
+@cross_origin()
+def voice_assistant():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    file_name = "recording.mp3"
+    full_file_name = os.path.join(app.instance_path, app.config.get('UPLOAD_FOLDER', 'uploads'), file_name)
+    print(full_file_name)
+    file.save(full_file_name)
+
+    # Process Text
+    text_entry = speech2text(full_file_name)
+    print(text_entry)
+    # text_entry = "Hello I am Juan"
+    answer = assistant.ask(text_entry + "?")
+    print(answer)
+    # Add Text to My Story
+    return answer
 
 @login_required
 @app.route('/recommendations')
