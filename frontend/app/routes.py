@@ -6,6 +6,8 @@ from flask_login import current_user, login_user, logout_user
 from app.models import Feedback, User
 from werkzeug.urls import url_parse
 from recommender.assistant import Assistant
+from recommender.sentiment_analysis import analyze_sentiment
+
 from recommender.content import ContentGetter
 from transformers import pipeline
 import os
@@ -46,9 +48,9 @@ def logout():
     return redirect(url_for('index'))
 
 @login_required
-@app.route('/feedback', methods=['GET', 'POST'])
-def feedback():
-    return render_template('feedback.html', title='Feedback')
+@app.route('/journal', methods=['GET', 'POST'])
+def journal():
+    return render_template('journal.html', title='Journal')
 
 
 @app.route('/voice-journal', methods=['POST'])
@@ -146,6 +148,39 @@ def recommendations():
                             movie_name=movie_recommendation,movie_description=movie_description,
                             song_name=song_recommendation,
                             song_url1=song_url , song_url2=artist_url, movie_url=movie_url)
+
+@login_required
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    return render_template('feedback.html', title='Feedback')
+
+
+@app.route('/voice-feedback', methods=['POST'])
+@cross_origin()
+def voice_feedback():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    file_name = "recording.mp3"
+    full_file_name = os.path.join(app.instance_path, app.config.get('UPLOAD_FOLDER', 'uploads'), file_name)
+    print(full_file_name)
+    file.save(full_file_name)
+
+    # Process Text
+    text_entry = speech2text(full_file_name)
+    print(text_entry)
+    # text_entry = "Hello I am Juan"
+    answer = analyze_sentiment(text_entry)
+    print(answer)
+    # Add Text to My Story
+    return answer
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

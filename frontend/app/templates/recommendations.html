@@ -1,26 +1,35 @@
 {% extends "base.html" %}
 
-{% block app_content %}
+{% block content %}
     <h1> Some recommendations for you </h1>
     <body>
         <h3> An event you might remember </h3>
             <h3 id="text">{{ event_text }}: </h3>
-            <p id="text">{{ event_description }}: </p>
+            <p id="text">{{ event_description }} </p>
 
             <img src="{{ event_img1 }}" alt="Event1">
             <img src="{{ event_img2 }}" alt="Event2">
+        <button>
+            <a href="{{ url_for('feedback') }}">Feedback</a>
+        </button>
 
         <h3> You might like this artist: {{ artist_name }} </h3>
         <p>{{ artist_description }}</p>
             <iframe width="420" height="315"
             src="{{ song_url2 }}">
             </iframe>
+        <button>
+            <a href="{{ url_for('feedback') }}">Feedback</a>
+        </button>
 
         <h3> Or how about this song: {{ song_name }} </h3>
 
         <iframe width="420" height="315"
         src="{{ song_url1 }}">
         </iframe>
+        <button>
+            <a href="{{ url_for('feedback') }}">Feedback</a>
+        </button>
         
         <h3> You might also like this movie: {{ movie_name }} </h3>
         <p>{{ movie_description }}</p>
@@ -28,5 +37,11 @@
         <iframe width="420" height="315"
         src="{{ movie_url }}">
         </iframe>
+<<<<<<< HEAD
+=======
+        <button>
+            <a href="{{ url_for('feedback') }}">Feedback</a>
+        </button>
+>>>>>>> 9283641114860374b46e3b6b150a678f4c530702
     </body>
 {% endblock %}
