@@ -3,7 +3,7 @@
 {% block content %}
     <h1> Hi, {{current_user.username}}! </h1>
     <button>
-        <a href="{{ url_for('feedback') }}">Voice Journal</a>
+        <a href="{{ url_for('journal') }}">Voice Journal</a>
     </button>
     <button>
         <a href="{{ url_for('recommendations') }}">Reminiscence</a>

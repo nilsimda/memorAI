@@ -9,4 +9,4 @@ film_query = "The film Die Hard is similar to Lethal Weapon\n The film called Th
 init_query = "My name is {}. I am a senior, please make sure all responses are true and talk about positive things\n\n"
 my_story = "The following is a conversation with an AI assistant. The assistant is helpful, creative, clever, and very friendly. \n\n Human: My name is {}, I was born in {} in {}. I currently live in {}. My favorite music artist is {}. My favorite movie is {}. "
 query="Tell me about {}\n\n"
-feedback= "Decide whether a Tweet's sentiment is happy, sad, excited, angry. \n\nTweet:'{}' \nSentiment:"
+feedback= "Decide whether a Tweet's sentiment is happy, sad, excited, angry, or neutral. \n\nTweet:'{}' \nSentiment:"

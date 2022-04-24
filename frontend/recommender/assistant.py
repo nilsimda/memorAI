@@ -49,7 +49,7 @@ class Assistant(object):
         return (recommendation, self.send_query(templates.query.format(recommendation),max_tokens=128, temperature=0.6))
     
     def ask(self, question):
-        return self.send_query(self.user_story + "\n\nHuman: " + question)
+        return self.send_query(self.user_story + "\n\nHuman: " + question + "\n\nAssistant")
     
     def send_query(self,msg,max_tokens=32, temperature = 0.4):
         response = openai.Completion.create(
