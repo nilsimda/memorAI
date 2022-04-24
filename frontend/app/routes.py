@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request, abort, make_response
 from flask_login.utils import login_required
 from app import app, db
 from app.forms import LoginForm, RegisterForm
@@ -9,6 +9,13 @@ from recommender.assistant import Assistant
 from recommender.content import ContentGetter
 from transformers import pipeline
 import os
+
+from flask_cors import CORS, cross_origin
+# app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+assistant = Assistant(current_user)
+
 
 @app.route('/')
 @app.route('/index')
@@ -41,24 +48,36 @@ def logout():
 @login_required
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
-    if request.method == 'POST':
-        f = request.files['audio_data']
-        with open('audio.wav', 'wb') as audio:
-            f.save(audio)
-        text = speech2text('audio.wav')
-        feedback = Feedback(feedback=text, user_id=current_user.id)
-        db.session.add(feedback)
-        db.session.commit()
-        os.remove('audio.wav')
-        return render_template('feedback.html', request="POST", text=text)
-    return render_template('feedback.html', title='Feedback', text="")
-
     return render_template('feedback.html', title='Feedback')
+
+
+@app.route('/save-record', methods=['POST'])
+@cross_origin()
+def audio():
+    # check if the post request has the file part
+    if 'file' not in request.files:
+        flash('No file part')
+        return redirect(request.url)
+    file = request.files['file']
+    # if user does not select file, browser also
+    # submit an empty part without filename
+    if file.filename == '':
+        flash('No selected file')
+        return redirect(request.url)
+    file_name = "recording.mp3"
+    full_file_name = os.path.join(app.instance_path, app.config.get('UPLOAD_FOLDER', 'uploads'), file_name)
+    print(full_file_name)
+    file.save(full_file_name)
+
+    # Process Text
+    text_entry = speech2text(full_file_name)
+    # text_entry = "Hello I am Juan"
+    print(text_entry)
+    return text_entry
 
 @login_required
 @app.route('/recommendations')
 def recommendations():
-    assistant = Assistant(current_user)
     content_getter = ContentGetter()
     event_recommendation, event_description = assistant.recommend_event()
     song_recommendation = assistant.recommend_song()
@@ -119,3 +138,4 @@ def speech2text(audio_file):
             tokenizer= "facebook/wav2vec2-base-960h",
         )
         return asr(audio_file)["text"]
+
