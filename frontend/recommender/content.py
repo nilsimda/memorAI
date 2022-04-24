@@ -1,16 +1,16 @@
 from google_images_search import GoogleImagesSearch
 from youtubesearchpython import VideosSearch
-import config
+from recommender import config
 
 class ContentGetter(object):
     def __init__(self):
         self.gis = GoogleImagesSearch(config.GCS_DEVELOPER_KEY, config.GCS_CX)
 
-    def get_images(self,query):
+    def get_images(self,query, n=1):
         query = query.replace('\n','')
         _search_params = {
         'q': query,
-        'num': 1,
+        'num': n,
         'fileType': 'jpg',
         # 'rights': 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived',
         'imgType': 'photo',
@@ -29,5 +29,5 @@ class ContentGetter(object):
         query = query.replace('\n','')
         videosSearch = VideosSearch(query, limit = 1)
         return (videosSearch.result()['result'][0]['title'], 
-                videosSearch.result()['result'][0]['link'])
+                videosSearch.result()['result'][0]['link'].replace('watch?v=','embed/'))
 
